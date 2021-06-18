@@ -1,6 +1,8 @@
 <h1>{{title}}</h1>
 <p>Welcome to {{title}}</p>
 
+<hr></hr>
+
 <form action="/checkout" id="hosted-fields-form" method="post">
   <label for="card-number">Card Number</label>
   <div id="card-number"></div>
@@ -18,6 +20,15 @@
   <div id="myFrame"></div>
 
 </form>
+
+<hr> </hr>
+
+<h1>Query Transaction Status</h1>
+<div id="statusWindow">
+<textarea name='Status'> </textarea>
+<input id="statusButton" type='button' value='Status Update'>
+</div>
+
 
 <script>
   var form = document.querySelector('#hosted-fields-form');
@@ -135,4 +146,20 @@
       }, false);
     });
   });
+
+console.log("status?");
+    $('#statusButton').on('click', function () {
+        var Status = $(this).val();
+        console.log("status?");
+        $.ajax({
+            type: 'POST',
+            url: '/checkout',
+            data: {
+                text: $("textarea[name=Status]").val(),
+                Status: Status
+            },
+            dataType : 'json'
+        });
+    });
+
 </script>

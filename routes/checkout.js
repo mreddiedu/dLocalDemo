@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const braintree = require('braintree');
 const axios = require('axios');
-const parser = require('xml2json');
+const parser = require('xml2json-light');
 var forwardApiResponse = '';
 var fs = require('fs');
 var http = require('http');
@@ -86,7 +86,7 @@ router.post('/', (req, res, next) => {
         "cc_cvv": "123",
         "x_address": "123 Bounty Drive",
         "x_city": "Mumbai",
-        "x_confirm": "https://www.google.com/"
+        "x_confirm": "https://webhook.site/c608e51e-7631-4f44-bcf9-65d03d0e4637"
     },
     config: {
         "name": "dlocal_charge_config",
@@ -233,9 +233,9 @@ router.post('/', (req, res, next) => {
       .then(response => {
         
         console.log(response.data.body);
-        forwardApiResponse = parser.toJson(response.data.body);
+        forwardApiResponse = parser.xml2json(response.data.body);
         console.log('\n', "forwardApiResponse in JSON: ", '\n', '\n', forwardApiResponse);
-        var jsonParsed = JSON.parse(forwardApiResponse);
+        var jsonParsed = JSON.parse(JSON.stringify(forwardApiResponse));
         var base64 = jsonParsed.response.threeDSHtmlContent;
         const buff = Buffer.from(base64, 'base64');
         const str = buff.toString('utf-8');
@@ -279,7 +279,7 @@ router.post('/', (req, res, next) => {
         //res.send({url: redirectURL});
       })
       .catch(error => {
-        console.log("ERROR.RESPONSE", error.response);
+        if(error) throw error;
       });
   };
  
