@@ -6,7 +6,8 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var notify = require('./routes/notify');
+var notifyRouter = require('./routes/notify');
+var resultRouter = require('./routes/result');
 
 var app = express();
 
@@ -23,6 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
+
 // The checkout route
 const checkout = require('./routes/checkout');
 app.use('/checkout', checkout);
@@ -31,7 +33,10 @@ app.use('/checkout', checkout);
 app.use('/assets', express.static('public'));
 
 // Listens to receive external webhook notifications
-app.use('/notify', notify);
+app.use('/notify', notifyRouter);
+
+// Display payment result
+app.use('/result', resultRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
