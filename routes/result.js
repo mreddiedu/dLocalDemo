@@ -7,7 +7,7 @@ router.post('/', function(req, res, next) {
     console.log("request body ", req.body);
     console.log("response: ", res);
     console.log("response body: ", res.body);
-    res.render('result', { title: 'resultPOST', result: JSON.stringify(req) });
+    res.render('result', { title: 'resultPOST', result: req });
 });
 
 router.get('/', function(req, res, next) {
