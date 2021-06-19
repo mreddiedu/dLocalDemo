@@ -86,7 +86,8 @@ router.post('/', (req, res, next) => {
         "cc_cvv": "123",
         "x_address": "123 Bounty Drive",
         "x_city": "Mumbai",
-        "x_confirm": "https://webhook.site/c608e51e-7631-4f44-bcf9-65d03d0e4637"
+        "x_confirm": "https://webhook.site/c608e51e-7631-4f44-bcf9-65d03d0e4637",
+        "x_return": "http://161.35.100.241/result"
     },
     config: {
         "name": "dlocal_charge_config",
@@ -213,10 +214,15 @@ router.post('/', (req, res, next) => {
                 "path": "/body/x_city",
                 "value": "$x_city"
             },
-            //optional parameter: To be provided if the confirmation URL is different from the confirmation URL registered by the merchant.
+            //optional parameter: Confirmation URL to listen for dLocal payment webhooks
             {
               "path": "/body/x_confirm",
               "value": "$x_confirm"
+            },
+            //optional parameter: Return URL after One Time Password verification
+            {
+              "path": "/body/x_return",
+              "value": "$x_return"
             }
         ]
     }
