@@ -107,7 +107,7 @@
             url: '/checkout',
             data: {'paymentMethodNonce': payload.nonce},
             success: function(data) {
-              $('#myFrame').html('<h1>Verification Link</h1><a href="http://localhost:3002/users" target="_blank">Issuer-prompted Verification Link</a>');
+              $('#myFrame').html('<h1>Verification Link</h1><a href="/users" target="_blank">Issuer-prompted Verification Link</a>');
               console.log(data);
             },
             error: function(data) {
