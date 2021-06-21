@@ -8,8 +8,8 @@ router.post('/', function(req, res, next) {
  
     var joined = [{req_header},{req_body}];
     //res.send(joined);
-
-    res.render('result', { title: 'resultGET' }, {dLocalResponse: joined});
+    
+    res.render('result', {dLocalResponse: JSON.stringify(joined)});
 });
 
 router.get('/', function(req, res, next) {
