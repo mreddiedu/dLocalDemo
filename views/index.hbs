@@ -1,9 +1,110 @@
 <h1>{{title}}</h1>
 <p>Welcome to {{title}}</p>
 
-<hr></hr>
+<hr>
+</hr>
 
-<form action="/checkout" id="hosted-fields-form" method="post">
+
+
+<div class="bootstrap-basic">
+
+  <form class="needs-validation" novalidate="">
+
+    <div class="row">
+      <div class="col-sm-6 mb-3">
+        <label for="cc-name">Cardholder Name</label>
+        <div class="form-control" id="cc-name"></div>
+        <small class="text-muted">Full name as displayed on card</small>
+        <div class="invalid-feedback">
+          Name on card is required
+        </div>
+      </div>
+      <div class="col-sm-6 mb-3">
+        <label for="email">Email</label>
+        <input type="email" class="form-control" id="email" placeholder="you@example.com" value="zhodupaypal@gmail.com">
+        <div class="invalid-feedback">
+          Email address is required
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-6 mb-3">
+        <label for="cc-number">Credit card number</label>
+        <div class="form-control" id="cc-number"></div>
+        <div class="invalid-feedback">
+          Credit card number is required
+        </div>
+      </div>
+      <div class="col-sm-3 mb-3">
+        <label for="cc-expiration">Expiration</label>
+        <div class="form-control" id="cc-expiration"></div>
+        <div class="invalid-feedback">
+          Expiration date required
+        </div>
+      </div>
+      <div class="col-sm-3 mb-3">
+        <label for="cc-expiration">CVV</label>
+        <div class="form-control" id="cc-cvv"></div>
+        <div class="invalid-feedback">
+          Security code required
+        </div>
+      </div>
+    </div>
+
+    <hr class="mb-4">
+    <div class="text-center">
+      <button class="btn btn-primary btn-lg" type="submit">Pay with <span id="card-brand">Card</span></button>
+    </div>
+  </form>
+</div>
+
+<div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;">
+  <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
+    <div class="toast-header">
+      <strong class="mr-auto">Success!</strong>
+      <small>Just now</small>
+      <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="toast-body">
+      Next, submit the payment method nonce to your server.
+    </div>
+  </div>
+</div>
+
+<div id="myFrame"> </div>
+
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+  Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{!-- <form action="/checkout" id="hosted-fields-form" method="post">
   <label for="card-number">Card Number</label>
   <div id="card-number"></div>
 
@@ -19,17 +120,223 @@
 
   <div id="myFrame"></div>
 
-</form>
+</form> --}}
 
-<hr> </hr>
-
-<h1>Query Transaction Status</h1>
+{{!-- <h1>Query Transaction Status</h1>
 <div id="statusWindow">
-<textarea name='Status'> </textarea>
-<input id="statusButton" type='button' value='Status Update'>
-</div>
+  <textarea name='Status'> </textarea>
+  <input id="statusButton" type='button' value='Status Update'>
+</div> --}}
 
 
+<script>
+  var form = $('form');
+
+  braintree.client.create({
+    authorization: 'sandbox_g42y39zw_348pk9cgf3bgyw2b'
+  }, function (err, clientInstance) {
+    if (err) {
+      console.error(err);
+      return;
+    }
+
+    braintree.hostedFields.create({
+      client: clientInstance,
+      styles: {
+        input: {
+          // change input styles to match
+          // bootstrap styles
+          'font-size': '1rem',
+          color: '#495057'
+        }
+      },
+      fields: {
+        cardholderName: {
+          selector: '#cc-name',
+          placeholder: 'Name as it appears on your card',
+          prefill: 'John Doe'
+        },
+        number: {
+          selector: '#cc-number',
+          placeholder: '4111 1111 1111 1111',
+          prefill: '4111 1111 1111 1111'
+        },
+        cvv: {
+          selector: '#cc-cvv',
+          placeholder: '123',
+          prefill: '123'
+        },
+        expirationDate: {
+          selector: '#cc-expiration',
+          placeholder: 'MM / YY',
+          prefill: '022022'
+        }
+      }
+    }, function (err, hostedFieldsInstance) {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      function createInputChangeEventListener(element) {
+        return function () {
+          validateInput(element);
+        }
+      }
+
+      function setValidityClasses(element, validity) {
+        if (validity) {
+          element.removeClass('is-invalid');
+          element.addClass('is-valid');
+        } else {
+          element.addClass('is-invalid');
+          element.removeClass('is-valid');
+        }
+      }
+
+      function validateInput(element) {
+        // very basic validation, if the
+        // fields are empty, mark them
+        // as invalid, if not, mark them
+        // as valid
+
+        if (!element.val().trim()) {
+          setValidityClasses(element, false);
+
+          return false;
+        }
+
+        setValidityClasses(element, true);
+
+        return true;
+      }
+
+      function validateEmail() {
+        var baseValidity = validateInput(email);
+
+        if (!baseValidity) {
+          return false;
+        }
+
+        if (email.val().indexOf('@') === -1) {
+          setValidityClasses(email, false);
+          return false;
+        }
+
+        setValidityClasses(email, true);
+        return true;
+      }
+
+      var ccName = $('#cc-name');
+      var email = $('#email');
+
+      ccName.on('change', function () {
+        validateInput(ccName);
+      });
+      email.on('change', validateEmail);
+
+
+      hostedFieldsInstance.on('validityChange', function (event) {
+        var field = event.fields[event.emittedBy];
+
+        // Remove any previously applied error or warning classes
+        $(field.container).removeClass('is-valid');
+        $(field.container).removeClass('is-invalid');
+
+        if (field.isValid) {
+          $(field.container).addClass('is-valid');
+        } else if (field.isPotentiallyValid) {
+          // skip adding classes if the field is
+          // not valid, but is potentially valid
+        } else {
+          $(field.container).addClass('is-invalid');
+        }
+      });
+
+      hostedFieldsInstance.on('cardTypeChange', function (event) {
+        var cardBrand = $('#card-brand');
+        var cvvLabel = $('[for="cc-cvv"]');
+
+        if (event.cards.length === 1) {
+          var card = event.cards[0];
+
+          // change pay button to specify the type of card
+          // being used
+          cardBrand.text(card.niceType);
+          // update the security code label
+          cvvLabel.text(card.code.name);
+        } else {
+          // reset to defaults
+          cardBrand.text('Card');
+          cvvLabel.text('CVV');
+        }
+      });
+
+      form.submit(function (event) {
+        event.preventDefault();
+
+        var formIsInvalid = false;
+        var state = hostedFieldsInstance.getState();
+
+        // perform validations on the non-Hosted Fields
+        // inputs
+        if (!validateEmail()) {
+          formIsInvalid = true;
+        }
+
+        // Loop through the Hosted Fields and check
+        // for validity, apply the is-invalid class
+        // to the field container if invalid
+        Object.keys(state.fields).forEach(function (field) {
+          if (!state.fields[field].isValid) {
+            $(state.fields[field].container).addClass('is-invalid');
+            formIsInvalid = true;
+          }
+        });
+
+        if (formIsInvalid) {
+          // skip tokenization request if any fields are invalid
+          return;
+        }
+
+        hostedFieldsInstance.tokenize(function (err, payload) {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          console.log("Client received nonce: ", payload.nonce);
+          // This is where you would submit payload.nonce to your server
+          $.ajax({
+            type: 'POST',
+            url: '/checkout',
+            data: { 'paymentMethodNonce': payload.nonce },
+            success: function (data) {
+              $
+              $('#myFrame').html('<h1>Verification Link</h1><a href="/paymentVerification" target="_blank">Issuer-prompted Verification Link</a>');
+              console.log(data);
+            },
+            error: function (data) {
+              throw data;
+              console.log("Client side error from ajax");
+            }
+
+          });
+
+
+          //$('.toast').toast('show');
+
+          // you can either send the form values with the payment
+          // method nonce via an ajax request to your server,
+          // or add the payment method nonce to a hidden inpiut
+          // on your form and submit the form programatically
+          // $('#payment-method-nonce').val(payload.nonce);
+          // form.submit()
+        });
+      });
+    });
+  });
+</script>
+
+{{!--
 <script>
   var form = document.querySelector('#hosted-fields-form');
   var submit = document.querySelector('input[type="submit"]');
@@ -105,15 +412,15 @@
           $.ajax({
             type: 'POST',
             url: '/checkout',
-            data: {'paymentMethodNonce': payload.nonce},
-            success: function(data) {
+            data: { 'paymentMethodNonce': payload.nonce },
+            success: function (data) {
               $('#myFrame').html('<h1>Verification Link</h1><a href="/users" target="_blank">Issuer-prompted Verification Link</a>');
               console.log(data);
             },
-            error: function(data) {
+            error: function (data) {
               console.log("errorr");
             }
-            
+
           });
           console.log('After AJAX Call');
           /*
@@ -147,19 +454,19 @@
     });
   });
 
-console.log("status?");
-    $('#statusButton').on('click', function () {
-        var Status = $(this).val();
-        console.log("status?");
-        $.ajax({
-            type: 'POST',
-            url: '/checkout',
-            data: {
-                text: $("textarea[name=Status]").val(),
-                Status: Status
-            },
-            dataType : 'json'
-        });
+  console.log("status?");
+  $('#statusButton').on('click', function () {
+    var Status = $(this).val();
+    console.log("status?");
+    $.ajax({
+      type: 'POST',
+      url: '/checkout',
+      data: {
+        text: $("textarea[name=Status]").val(),
+        Status: Status
+      },
+      dataType: 'json'
     });
+  });
 
-</script>
+</script> --}}

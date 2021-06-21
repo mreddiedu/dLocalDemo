@@ -7,7 +7,9 @@ router.post('/', function(req, res, next) {
     var req_header = JSON.stringify(req.header, null, 2);
  
     var joined = [{req_header},{req_body}];
-    res.send(joined);
+    //res.send(joined);
+
+    res.render('result', { title: 'resultGET' }, {dLocalResponse: joined});
 });
 
 router.get('/', function(req, res, next) {

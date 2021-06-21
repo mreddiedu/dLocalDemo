@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var paymentVerificationRouter = require('./routes/paymentVerification');
 var notifyRouter = require('./routes/notify');
 var resultRouter = require('./routes/result');
 
@@ -22,7 +22,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/paymentVerification', paymentVerificationRouter);
 
 
 // The checkout route

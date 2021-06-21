@@ -4,7 +4,7 @@ var fs = require('fs');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  fs.readFile('public/userVerify.html', function (err, html){
+  fs.readFile('public/paymentVerification.html', function (err, html){
     res.writeHead(200, {'Content-Type': 'text/html'});
     res.write(html + '');
     res.end();

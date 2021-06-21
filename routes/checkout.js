@@ -250,38 +250,23 @@ router.post('/', (req, res, next) => {
 
         console.log('Executed before file reading.');
 
-        fs.writeFile('./public/userVerify.html', str, 'utf8', function(error){
+        fs.writeFile('./public/paymentVerification.html', str, 'utf8', function(error){
           if(error) {
             throw error;
           } else {
-            console.log('userVerify.html update sucess...');
-          }
-          
+            console.log('paymentVerification.html update sucess...');
+          } 
           
         });
 
         console.log('Executed after file reading.');
 
-        /*
-        function onRequest(request, response) {
-          res.writeHead(200, {'Content-Type': 'text/plain'});
-          fs.readFile('./public/userVerify.html', null, function(error,data) {
-            if(error) throw error;
-            response.write(data);
-            response.end();
-          });
-        }
-      
-        onRequest();
-        */
-
-        //res.redirect('http://google.com');
       })
       .then(response => {
         
         console.log("2nd promise");
         
-        res.redirect('/users');
+        res.redirect('/paymentVerification');
         //res.send({url: redirectURL});
       })
       .catch(error => {
@@ -290,29 +275,13 @@ router.post('/', (req, res, next) => {
   };
  
   forwardRequest();
+});
 
-  console.log('ha');
-  /*
-    console.log("Server side nonce:", nonceFromTheClient);
-  
-    async function setConfig() {
-  
-      const config = {
-          url: 'https://forwarding.sandbox.braintreegateway.com/',
-          auth: {
-            username: 'khr4zhdwd867hk9g',
-            password: '572cedb8c2d4359988895ad1e1e71b87'
-          }
-      }
-  
-      let res = await axios(config)
-  
-      console.log("res.request.config OUTPUT", res.request);
-      console.log("END");
-  }
-  
-  setConfig();
-  
+module.exports = router;
+
+
+
+/*
     const postRequest = async () => {
       const newTodo = {
         merchant_id: "mzwf7bv4zc2bjccb",
@@ -349,9 +318,8 @@ router.post('/', (req, res, next) => {
       }
   }
   
-  postRequest();*/
+  postRequest();
 
-  /*
   // Create a new transaction for $10
   const newTransaction = gateway.transaction.sale({
     amount: '10.00',
@@ -369,6 +337,3 @@ router.post('/', (req, res, next) => {
     }
   });
   */
-});
-
-module.exports = router;
