@@ -3,11 +3,11 @@ var router = express.Router();
 
 /* GET home page. */
 router.post('/', function(req, res, next) {
-    console.log("request: ", req);
-    console.log("request body ", req.body);
-    console.log("response: ", res);
-    console.log("response body: ", res.body);
-    res.render('result', { title: 'resultPOST', result: req.body });
+    var req_body = JSON.stringify(req.body, null, 2);
+    var req_header = JSON.stringify(req.header, null, 2);
+ 
+    var joined = [{req_header},{req_body}];
+    res.send(joined);
 });
 
 router.get('/', function(req, res, next) {

@@ -37,6 +37,8 @@ app.use('/notify', notifyRouter);
 
 // Display payment result
 app.use('/result', resultRouter);
+app.use(express.urlencoded({extended: true}));
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
