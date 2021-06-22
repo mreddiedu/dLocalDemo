@@ -264,8 +264,6 @@ router.post('/', (req, res, next) => {
       })
       .then(response => {
         
-        console.log("2nd promise");
-        
         res.redirect('/paymentVerification');
         //res.send({url: redirectURL});
       })
