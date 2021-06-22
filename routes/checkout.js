@@ -20,10 +20,12 @@ router.post('/', (req, res, next) => {
 
   // Use the payment method nonce here
   const nonceFromTheClient = req.body.paymentMethodNonce;
+  console.log("nonce on server: ", nonceFromTheClient);
 
-  const payload = {
+
+  var ForwardAPIpayload = {
     merchant_id: "mzwf7bv4zc2bjccb",
-    payment_method_nonce: "fake-valid-nonce",
+    payment_method_nonce: nonceFromTheClient,
     debug_transformations: false,
     url: "https://sandbox.dlocal.com/api_curl/cc/sale",
     method: "POST",
@@ -39,9 +41,7 @@ router.post('/', (req, res, next) => {
         "x_device_id": "54hj4h5jh46hasjd",
         "x_country": "IN",
         "x_cpf": "SBUDA80030",
-        "x_name": "Ivan Lolivier",
         "x_email": "santiago@dlocal.com",
-        "cc_number": "4111111111111111",
         "cc_exp_month": "02",
         "cc_exp_year": "2023",
         "cc_cvv": "123",
@@ -112,7 +112,7 @@ router.post('/', (req, res, next) => {
             },
             {
                 "path": "/body/x_name",
-                "value": "$x_name"
+                "value": "$cardholder_name"
             },
             {
                 "path": "/body/x_email",
@@ -120,19 +120,19 @@ router.post('/', (req, res, next) => {
             },
             {
                 "path": "/body/cc_number",
-                "value": "$cc_number"
+                "value": "$number"
             },
             {
                 "path": "/body/cc_exp_month",
-                "value": "$cc_exp_month"
+                "value": "$expiration_month"
             },
             {
                 "path": "/body/cc_exp_year",
-                "value": "$cc_exp_year"
+                "value": "$expiration_year"
             },
             {
                 "path": "/body/cc_cvv",
-                "value": "$cc_cvv"
+                "value": "$cvv"
             },
             {
                 "path": "/body/control",
@@ -152,10 +152,10 @@ router.post('/', (req, res, next) => {
                                     "$x_amount",
                                     "$x_currency",
                                     "$x_email",
-                                    "$cc_number",
-                                    "$cc_exp_month",
-                                    "$cc_cvv",
-                                    "$cc_exp_year",
+                                    "$number",
+                                    "$expiration_month",
+                                    "$cvv",
+                                    "$expiration_year",
                                     "$x_cpf",
                                     "$x_country"
                                 ]
@@ -189,10 +189,10 @@ router.post('/', (req, res, next) => {
 
  
     axios.post('https://forwarding.sandbox.braintreegateway.com/',
-      payload, {
+    ForwardAPIpayload, {
       auth: {
-        username: 'khr4zhdwd867hk9g',
-        password: '572cedb8c2d4359988895ad1e1e71b87'
+        username: 'khr4zhdwd867hk9g', //Braintree API public key - zhodupaypal@gmail.com
+        password: '572cedb8c2d4359988895ad1e1e71b87' //Braintree API private key
       }
     })
       .then(response => {
@@ -221,17 +221,14 @@ router.post('/', (req, res, next) => {
 
       })
       .then(response => {
-        console.log('2');
+        console.log('.then#2');
         res.redirect('/paymentVerification');
       })
       .catch(errorHandler);
- 
- 
-
 
   function errorHandler(e) {
     if (e) {
-      console.log(e);
+      console.log(e.response.data.message);
       console.log("Axios promise error");
     } else {
       throw e;
@@ -263,7 +260,7 @@ module.exports = router;
   postData();
 
   
-  const payload = {
+  const ForwardAPIpayload = {
     merchant_id: "mzwf7bv4zc2bjccb",
     payment_method_nonce: nonceFromTheClient,
     url: "https://httpbin.org/post",
@@ -324,6 +321,25 @@ module.exports = router;
 
   // Create a new transaction for $10
   const newTransaction = gateway.transaction.sale({
+    amount: '10.00',
+    paymentMethodNonce: nonceFromTheClient,
+    options: {
+      // This option requests the funds from the transaction
+      // once it has been authorized successfully
+      submitForSettlement: true
+    }
+  }, (error, result) => {
+    if (result) {
+      res.send(result);
+    } else {
+      res.status(500).send(error);
+    }
+  });
+  */
+
+  /*
+
+    const newTransaction = gateway.transaction.sale({
     amount: '10.00',
     paymentMethodNonce: nonceFromTheClient,
     options: {

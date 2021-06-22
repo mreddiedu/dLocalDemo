@@ -65,7 +65,7 @@
   var form = $('form');
 
   braintree.client.create({
-    authorization: 'sandbox_g42y39zw_348pk9cgf3bgyw2b'
+    authorization: 'sandbox_x6yhq7j2_mzwf7bv4zc2bjccb' //Insert tokenization key
   }, function (err, clientInstance) {
     if (err) {
       console.error(err);
@@ -242,7 +242,6 @@
             url: '/checkout',
             data: { 'paymentMethodNonce': payload.nonce },
             success: function (data) {
-              $
               $('#myFrame').html('<h1>Verification Link</h1><a href="/paymentVerification" target="_blank">Issuer-prompted Verification Link</a>');
               console.log(data);
             },
