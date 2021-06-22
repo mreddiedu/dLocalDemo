@@ -20,7 +20,9 @@ router.post('/', (req, res, next) => {
 
   // Use the payment method nonce here
   const nonceFromTheClient = req.body.paymentMethodNonce;
-  console.log("nonce on server: ", nonceFromTheClient);
+  var amount = req.body.amount;
+  var invoice = req.body.invoice;
+  console.log("Server received nonce: ", nonceFromTheClient);
 
 
   var ForwardAPIpayload = {
@@ -34,17 +36,14 @@ router.post('/', (req, res, next) => {
         "x_login": "293a6dd971",
         "x_trans_key": "262be38487",
         "x_version": "5.0",
-        "x_invoice": "Invoice1234",
-        "x_amount": "100.95",
+        "x_invoice": invoice,
+        "x_amount": amount,
         "x_currency": "INR",
         "x_description": "Product123",
-        "x_device_id": "54hj4h5jh46hasjd",
+        "x_device_id": "54hj4h5jh46hashd",
         "x_country": "IN",
         "x_cpf": "SBUDA80030",
         "x_email": "santiago@dlocal.com",
-        "cc_exp_month": "02",
-        "cc_exp_year": "2023",
-        "cc_cvv": "123",
         "x_address": "123 Bounty Drive",
         "x_city": "Mumbai",
         "x_confirm": "https://webhook.site/c608e51e-7631-4f44-bcf9-65d03d0e4637",
@@ -221,7 +220,6 @@ router.post('/', (req, res, next) => {
 
       })
       .then(response => {
-        console.log('.then#2');
         res.redirect('/paymentVerification');
       })
       .catch(errorHandler);
