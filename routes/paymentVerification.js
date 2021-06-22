@@ -9,7 +9,6 @@ router.get('/', function(req, res, next) {
     res.write(html + '');
     res.end();
   })
-  //res.send('respond with a resource');
 });
 
 module.exports = router;

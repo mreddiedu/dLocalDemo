@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const braintree = require('braintree');
+var fs = require('fs');
+var http = require('http');
+
 const axios = require('axios');
 const parser = require('xml2json-light');
 var forwardApiResponse = '';
-var fs = require('fs');
-var http = require('http');
-var redirectURL = '';
+
 
 router.post('/', (req, res, next) => {
   const gateway = new braintree.BraintreeGateway({
@@ -19,46 +20,6 @@ router.post('/', (req, res, next) => {
 
   // Use the payment method nonce here
   const nonceFromTheClient = req.body.paymentMethodNonce;
-
-  const getData = () => {
-    axios.get('https://reqres.in/api/users').then(response => {
-      console.log(response);
-    });
-  };
-
-  //getData();
-
-  const postData = () => {
-    axios.post('https://reqres.in/api/users', {
-      email: 'eve.holt@reqres.in',
-      password: 'pistol'
-    }).then(response => {
-      console.log(response.status);
-      console.log(response.data);
-    });
-  };
-
-  //postData();
-
-  /*
-  const payload = {
-    merchant_id: "mzwf7bv4zc2bjccb",
-    payment_method_nonce: nonceFromTheClient,
-    url: "https://httpbin.org/post",
-    method: "POST",
-    config: {
-      name: "inline_example",
-      methods: ["POST"],
-      url: "^https://httpbin\\.org/post$",
-      request_format: { "/body": "urlencode" },
-      types: ["CreditCard"],
-      transformations: [{
-        "path": "/body/card[number]",
-        "value": "$number"
-      }]
-    }
-  };
-  */
 
   const payload = {
     merchant_id: "mzwf7bv4zc2bjccb",
@@ -91,9 +52,7 @@ router.post('/', (req, res, next) => {
     },
     config: {
         "name": "dlocal_charge_config",
-        "methods": [
-            "POST"
-        ],
+        "methods": ["POST"],
         "url": "^https://sandbox\\.dlocal\\.com/api_curl/cc/sale$",
         "keys": [
             "616462363431393133326632316464626238656537323533663532333735393335"
@@ -228,7 +187,7 @@ router.post('/', (req, res, next) => {
     }
   }
 
-  const forwardRequest = () => {
+ 
     axios.post('https://forwarding.sandbox.braintreegateway.com/',
       payload, {
       auth: {
@@ -237,20 +196,19 @@ router.post('/', (req, res, next) => {
       }
     })
       .then(response => {
-        
+        console.log('1');
         console.log(response.data.body);
         forwardApiResponse = parser.xml2json(response.data.body);
         console.log('\n', "forwardApiResponse in JSON: ", '\n', '\n', forwardApiResponse);
         var jsonParsed = JSON.parse(JSON.stringify(forwardApiResponse));
         var base64 = jsonParsed.response.threeDSHtmlContent;
         const buff = Buffer.from(base64, 'base64');
-        const str = buff.toString('utf-8');
-        redirectURL = str;
-        console.log(str);
+        const dLocalOTPcontent = buff.toString('utf-8');
+        console.log('\n', "forwardApiResponse in JSON: ", '\n', '\n', dLocalOTPcontent);
 
         console.log('Executed before file reading.');
 
-        fs.writeFile('./public/paymentVerification.html', str, 'utf8', function(error){
+        fs.writeFile('./public/paymentVerification.html', dLocalOTPcontent, 'utf8', function(error){
           if(error) {
             throw error;
           } else {
@@ -263,20 +221,66 @@ router.post('/', (req, res, next) => {
 
       })
       .then(response => {
-        
+        console.log('2');
         res.redirect('/paymentVerification');
-        //res.send({url: redirectURL});
       })
-      .catch(error => {
-        if(error) throw error;
-      });
-  };
+      .catch(errorHandler);
  
-  forwardRequest();
+ 
+
+
+  function errorHandler(e) {
+    if (e) {
+      console.log(e);
+      console.log("Axios promise error");
+    } else {
+      throw e;
+    }
+  }
 });
 
 module.exports = router;
 
+/*
+  const getData = () => {
+    axios.get('https://reqres.in/api/users').then(response => {
+      console.log(response);
+    });
+  };
+
+  getData();
+
+  const postData = () => {
+    axios.post('https://reqres.in/api/users', {
+      email: 'eve.holt@reqres.in',
+      password: 'pistol'
+    }).then(response => {
+      console.log(response.status);
+      console.log(response.data);
+    });
+  };
+
+  postData();
+
+  
+  const payload = {
+    merchant_id: "mzwf7bv4zc2bjccb",
+    payment_method_nonce: nonceFromTheClient,
+    url: "https://httpbin.org/post",
+    method: "POST",
+    config: {
+      name: "inline_example",
+      methods: ["POST"],
+      url: "^https://httpbin\\.org/post$",
+      request_format: { "/body": "urlencode" },
+      types: ["CreditCard"],
+      transformations: [{
+        "path": "/body/card[number]",
+        "value": "$number"
+      }]
+    }
+  };
+*/
 
 
 /*
