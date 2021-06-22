@@ -24,7 +24,6 @@ router.post('/', (req, res, next) => {
   var invoice = req.body.invoice;
   console.log("Server received nonce: ", nonceFromTheClient);
 
-
   var ForwardAPIpayload = {
     merchant_id: "mzwf7bv4zc2bjccb",
     payment_method_nonce: nonceFromTheClient,
@@ -46,7 +45,7 @@ router.post('/', (req, res, next) => {
         "x_email": "santiago@dlocal.com",
         "x_address": "123 Bounty Drive",
         "x_city": "Mumbai",
-        "x_confirm": "https://webhook.site/c608e51e-7631-4f44-bcf9-65d03d0e4637",
+        "x_confirm": "https://webhook.site/394187b7-cf3c-48a0-a9f3-4018cee46391",
         "x_return": "http://161.35.100.241/result"
     },
     config: {
