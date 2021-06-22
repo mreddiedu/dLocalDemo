@@ -202,7 +202,7 @@ router.post('/', (req, res, next) => {
         var base64 = jsonParsed.response.threeDSHtmlContent;
         const buff = Buffer.from(base64, 'base64');
         const dLocalOTPcontent = buff.toString('utf-8');
-        console.log('\n', "3DS Content: ", '\n', '\n', dLocalOTPcontent);
+        console.log('\n', "3DS Content: ", '\n', '\n', dLocalOTPcontent, '\n', '\n');
 
         console.log('Executed before file reading.');
         //write result to server
