@@ -185,7 +185,7 @@ router.post('/', (req, res, next) => {
     }
   }
 
- 
+    //Forward HostedField payload to Braintree
     axios.post('https://forwarding.sandbox.braintreegateway.com/',
     ForwardAPIpayload, {
       auth: {
@@ -194,31 +194,31 @@ router.post('/', (req, res, next) => {
       }
     })
       .then(response => {
-        console.log('1');
-        console.log(response.data.body);
-        forwardApiResponse = parser.xml2json(response.data.body);
-        console.log('\n', "forwardApiResponse in JSON: ", '\n', '\n', forwardApiResponse);
+       
+        //console.log(response.data.body); //output XML response from dLocal
+        forwardApiResponse = parser.xml2json(response.data.body); //convert XML response to JSON
+        console.log('\n', "Forward Api Response: ", '\n', '\n', forwardApiResponse);
         var jsonParsed = JSON.parse(JSON.stringify(forwardApiResponse));
         var base64 = jsonParsed.response.threeDSHtmlContent;
         const buff = Buffer.from(base64, 'base64');
         const dLocalOTPcontent = buff.toString('utf-8');
-        console.log('\n', "forwardApiResponse in JSON: ", '\n', '\n', dLocalOTPcontent);
+        console.log('\n', "3DS Content: ", '\n', '\n', dLocalOTPcontent);
 
         console.log('Executed before file reading.');
-
+        //write result to server
         fs.writeFile('./public/paymentVerification.html', dLocalOTPcontent, 'utf8', function(error){
           if(error) {
             throw error;
           } else {
             console.log('paymentVerification.html update sucess...');
           } 
-          
         });
 
         console.log('Executed after file reading.');
 
       })
       .then(response => {
+        //redirect 
         res.redirect('/paymentVerification');
       })
       .catch(errorHandler);
