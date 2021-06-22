@@ -6,8 +6,7 @@ var parser = require('xml2json-light');
 router.post('/', function(req, res, next) {
     var req_body = JSON.stringify(req.body, null, 2);
     var req_header = JSON.stringify(req.header, null, 2);
-   console.log("REQUEST PARAM: ", req);
-    var joined = [{req_header},{req_body}];
+    console.log("REQUEST PARAM: ", req.body);
     //res.send(joined);
     
     res.render('result', {title: 'Merchant Redirect Page', dLocalResponse: req_body});
